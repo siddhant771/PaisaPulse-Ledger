@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "transactions")
 data class TransactionEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0, // Unique ID for every expense
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0, // Unique ID for every expense
     val amount: Double,        // The money value (e.g., 500.0)
     val merchant: String,      // Who you paid (e.g., Zomato)
     val timestamp: Long,       // The exact time of the SMS

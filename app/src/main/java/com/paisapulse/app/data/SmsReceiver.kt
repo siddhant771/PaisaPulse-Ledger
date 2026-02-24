@@ -4,10 +4,21 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import android.util.Log
+import com.paisapulse.app.data.local.entities.TransactionEntity
+import com.paisapulse.app.domain.repository.TransactionRepository
 import com.paisapulse.app.utils.SmsParser
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint // This tells Hilt to allow injection here
 class SmsReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var repository: TransactionRepository
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
             val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
@@ -16,8 +27,19 @@ class SmsReceiver : BroadcastReceiver() {
                 val amount = SmsParser.parseAmount(body)
 
                 if (amount != null) {
+                    // Logic to extract merchant from sender address
+                    val sender = message.displayOriginatingAddress ?: "Unknown"
 
-                    android.widget.Toast.makeText(context, "Money detected: ₹$amount", android.widget.Toast.LENGTH_LONG).show()
+                    val transaction = TransactionEntity(
+                        amount = amount,
+                        merchant = sender,
+                        timestamp = System.currentTimeMillis()
+                    )
+
+                    // Save to DB in a background thread
+                    CoroutineScope(Dispatchers.IO).launch {
+                        repository.saveTransaction(transaction)
+                    }
                 }
             }
         }
