@@ -1,14 +1,23 @@
 package com.paisapulse.app
 
+import android.Manifest
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.paisapulse.app.databinding.ActivityMainBinding
+import com.paisapulse.app.presentation.ui.TransactionAdapter
+import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint // REQUIRED: This lets Hilt inject the ViewModel
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: TransactionViewModel by viewModels()
+
+    // 1. Permission Logic
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -18,15 +27,25 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Permission Denied. Auto-tracking won't work.", Toast.LENGTH_LONG).show()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        // 2. Initialize ViewBinding
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // 3. Setup RecyclerView
+        val adapter = TransactionAdapter()
+        binding.rvTransactions.adapter = adapter
+
+        // 4. Observe the Database (The Reactive Magic)
+        viewModel.allTransactions.observe(this) { transactions ->
+            // DiffUtil works behind the scenes here to only refresh changed items
+            adapter.submitList(transactions)
         }
-        requestPermissionLauncher.launch(android.Manifest.permission.RECEIVE_SMS)
+
+        // 5. Ask for Permission on startup
+        requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
     }
 }

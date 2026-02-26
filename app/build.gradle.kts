@@ -53,4 +53,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
 }
