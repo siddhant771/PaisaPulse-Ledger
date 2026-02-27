@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,4 +19,9 @@ class TransactionViewModel @Inject constructor(
 
     // Converting Flow to LiveData for the XML View
     val allTransactions = repository.getAllTransactions().asLiveData()
+    fun deleteTransaction(transaction: TransactionEntity) {
+        viewModelScope.launch {
+            repository.deleteTransaction(transaction)
+        }
+    }
 }

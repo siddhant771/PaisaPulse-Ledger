@@ -18,4 +18,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getAllTransactions(): Flow<List<TransactionEntity>> {
         return transactionDao.getAllTransactions()
     }
+    override suspend fun deleteTransaction(transaction: TransactionEntity) {
+        transactionDao.deleteTransaction(transaction)
+    }
 }

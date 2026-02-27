@@ -47,11 +47,16 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.room.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.room:room-runtime:2.7.0-alpha02")
+    implementation("androidx.room:room-ktx:2.7.0-alpha02")
+    kapt("androidx.room:room-compiler:2.7.0-alpha02")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
+    implementation("androidx.sqlite:sqlite:2.4.0")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 }

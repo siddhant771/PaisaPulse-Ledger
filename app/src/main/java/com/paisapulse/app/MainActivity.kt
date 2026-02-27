@@ -47,5 +47,17 @@ class MainActivity : AppCompatActivity() {
 
         // 5. Ask for Permission on startup
         requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+        val swipeHandler = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+            override fun onMove(rv: androidx.recyclerview.widget.RecyclerView, vh: androidx.recyclerview.widget.RecyclerView.ViewHolder, t: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean = false
+
+            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val transaction = adapter.currentList[position] // Get the swiped item
+                viewModel.deleteTransaction(transaction) // Delete from DB
+                Toast.makeText(this@MainActivity, "Transaction Deleted", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        androidx.recyclerview.widget.ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rvTransactions)
     }
 }

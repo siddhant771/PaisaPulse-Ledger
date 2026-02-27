@@ -22,8 +22,14 @@ class TransactionAdapter : ListAdapter<TransactionEntity, TransactionAdapter.Vie
     class ViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: TransactionEntity) {
             binding.tvMerchant.text = item.merchant
-            binding.tvAmount.text = "₹${item.amount}"
-            binding.tvDate.text = "ID: ${item.id}" // We will format actual date later
+
+            // 1. Format Currency to 2 decimal places (e.g., ₹500.00)
+            binding.tvAmount.text = String.format("₹%.2f", item.amount)
+
+            // 2. Convert timestamp to a readable Date (e.g., 27 Feb, 09:10 PM)
+            val sdf = java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.getDefault())
+            val dateString = sdf.format(java.util.Date(item.timestamp))
+            binding.tvDate.text = dateString
         }
     }
 

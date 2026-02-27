@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface TransactionRepository {
     suspend fun saveTransaction(transaction: TransactionEntity)
     fun getAllTransactions(): Flow<List<TransactionEntity>>
+    suspend fun deleteTransaction(transaction: TransactionEntity)
 }
