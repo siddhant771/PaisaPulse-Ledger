@@ -25,6 +25,7 @@ class SmsReceiver : BroadcastReceiver() {
             for (message in messages) {
                 val body = message.messageBody
                 val amount = SmsParser.parseAmount(body)
+                val category = SmsParser.getCategory(body)
 
                 if (amount != null) {
                     // Logic to extract merchant from sender address
@@ -33,7 +34,8 @@ class SmsReceiver : BroadcastReceiver() {
                     val transaction = TransactionEntity(
                         amount = amount,
                         merchant = sender,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        category = category
                     )
 
                     // Save to DB in a background thread
