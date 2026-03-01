@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
             // DiffUtil works behind the scenes here to only refresh changed items
             adapter.submitList(transactions)
         }
+        viewModel.totalExpenses.observe(this) { total ->
+            val safeTotal = total ?: 0.0
+            binding.tvTotalAmount.text = String.format("₹%.2f", safeTotal)
+        }
 
         // 5. Ask for Permission on startup
         requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)

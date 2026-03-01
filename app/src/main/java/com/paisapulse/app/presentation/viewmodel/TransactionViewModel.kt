@@ -1,5 +1,6 @@
 package com.paisapulse.app.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -19,9 +20,11 @@ class TransactionViewModel @Inject constructor(
 
     // Converting Flow to LiveData for the XML View
     val allTransactions = repository.getAllTransactions().asLiveData()
+    val totalExpenses: LiveData<Double?> = repository.getTotalExpenses().asLiveData()
     fun deleteTransaction(transaction: TransactionEntity) {
         viewModelScope.launch {
             repository.deleteTransaction(transaction)
         }
     }
+
 }

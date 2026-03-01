@@ -7,4 +7,5 @@ interface TransactionRepository {
     suspend fun saveTransaction(transaction: TransactionEntity)
     fun getAllTransactions(): Flow<List<TransactionEntity>>
     suspend fun deleteTransaction(transaction: TransactionEntity)
+    fun getTotalExpenses(): Flow<Double?>
 }

@@ -21,4 +21,5 @@ class TransactionRepositoryImpl @Inject constructor(
     override suspend fun deleteTransaction(transaction: TransactionEntity) {
         transactionDao.deleteTransaction(transaction)
     }
+    override fun getTotalExpenses(): Flow<Double?> = transactionDao.getTotalExpenses()
 }
