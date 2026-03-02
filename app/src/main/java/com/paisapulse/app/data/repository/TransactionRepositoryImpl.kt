@@ -22,4 +22,11 @@ class TransactionRepositoryImpl @Inject constructor(
         transactionDao.deleteTransaction(transaction)
     }
     override fun getTotalExpenses(): Flow<Double?> = transactionDao.getTotalExpenses()
+    override fun getTransactionsByCategory(category: String): Flow<List<TransactionEntity>> {
+        return transactionDao.getTransactionsByCategory(category)
+    }
+
+    override fun getTotalByCategory(category: String): Flow<Double?> {
+        return transactionDao.getTotalByCategory(category)
+    }
 }

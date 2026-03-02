@@ -48,6 +48,33 @@ class MainActivity : AppCompatActivity() {
             val safeTotal = total ?: 0.0
             binding.tvTotalAmount.text = String.format("₹%.2f", safeTotal)
         }
+        binding.chipGroupFilters.setOnCheckedChangeListener { _, checkedId ->
+            // Remove previous observers to prevent multiple data streams clashing
+            viewModel.allTransactions.removeObservers(this)
+            viewModel.totalExpenses.removeObservers(this)
+
+            when (checkedId) {
+                R.id.chipAll -> {
+                    viewModel.allTransactions.observe(this) { adapter.submitList(it) }
+                    viewModel.totalExpenses.observe(this) { updateSummary(it) }
+                }
+                R.id.chipFood -> {
+                    // These require the ViewModel updates in Step 2 below
+                    viewModel.getFilteredData("Food").observe(this) { adapter.submitList(it) }
+                    viewModel.getFilteredTotal("Food").observe(this) { updateSummary(it) }
+                }
+                R.id.chipTravel -> {
+                    viewModel.getFilteredData("Travel").observe(this) { adapter.submitList(it) }
+                    viewModel.getFilteredTotal("Travel").observe(this) { updateSummary(it) }
+                }
+                R.id.chipBills -> {
+                    viewModel.getFilteredData("Bills").observe(this) { adapter.submitList(it) }
+                    viewModel.getFilteredTotal("Bills").observe(this) { updateSummary(it) }
+                }
+            }
+        }
+
+
 
         // 5. Ask for Permission on startup
         requestPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
@@ -63,5 +90,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         androidx.recyclerview.widget.ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rvTransactions)
+    }
+    private fun updateSummary(total: Double?) {
+        binding.tvTotalAmount.text = String.format("₹%.2f", total ?: 0.0)
     }
 }

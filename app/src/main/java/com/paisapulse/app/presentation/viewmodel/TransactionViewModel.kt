@@ -26,5 +26,12 @@ class TransactionViewModel @Inject constructor(
             repository.deleteTransaction(transaction)
         }
     }
+    fun getFilteredData(category: String): LiveData<List<TransactionEntity>> {
+        return repository.getTransactionsByCategory(category).asLiveData()
+    }
+
+    fun getFilteredTotal(category: String): LiveData<Double?> {
+        return repository.getTotalByCategory(category).asLiveData()
+    }
 
 }

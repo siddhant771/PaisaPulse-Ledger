@@ -19,4 +19,9 @@ interface TransactionDao {
     suspend fun deleteTransaction(transaction: TransactionEntity)
     @Query("SELECT SUM(amount) FROM transactions")
     fun getTotalExpenses(): Flow<Double?>
+    @Query("SELECT * FROM transactions WHERE category = :category ORDER BY timestamp DESC")
+    fun getTransactionsByCategory(category: String): Flow<List<TransactionEntity>>
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE category = :category")
+    fun getTotalByCategory(category: String): Flow<Double?>
 }
