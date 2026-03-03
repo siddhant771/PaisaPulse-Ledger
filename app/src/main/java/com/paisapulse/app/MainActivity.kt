@@ -78,6 +78,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        binding.etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString().lowercase()
+                val fullList = viewModel.allTransactions.value ?: emptyList()
+
+                // Sift through the list in memory for instant results
+                val filtered = fullList.filter {
+                    it.merchant.lowercase().contains(query) ||
+                            it.category.lowercase().contains(query)
+                }
+                adapter.submitList(filtered)
+            }
+
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
 
         viewModel.categoryTotals.observe(this) { totals ->
             if (!totals.isNullOrEmpty()) {
