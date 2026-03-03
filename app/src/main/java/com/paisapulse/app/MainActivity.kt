@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val MONTHLY_LIMIT = 15000.0
     private val viewModel: TransactionViewModel by viewModels()
 
     // 1. Permission Logic
@@ -51,10 +52,7 @@ class MainActivity : AppCompatActivity() {
             // DiffUtil works behind the scenes here to only refresh changed items
             adapter.submitList(transactions)
         }
-        viewModel.totalExpenses.observe(this) { total ->
-            val safeTotal = total ?: 0.0
-            binding.tvTotalAmount.text = String.format("₹%.2f", safeTotal)
-        }
+
         binding.chipGroupFilters.setOnCheckedChangeListener { _, checkedId ->
             // Remove previous observers to prevent multiple data streams clashing
             viewModel.allTransactions.removeObservers(this)
@@ -84,6 +82,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.categoryTotals.observe(this) { totals ->
             if (!totals.isNullOrEmpty()) {
                 setupChart(totals)
+            }
+        }
+        // Simplified main observer
+        viewModel.totalExpenses.observe(this) { total ->
+            updateSummary(total)
+
+            // Keep only the alert logic here
+            val safeTotal = total ?: 0.0
+            if ((safeTotal / MONTHLY_LIMIT) * 100 >= 100) {
+                Toast.makeText(this, "🚨 Monthly Budget Exceeded!", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -127,5 +135,16 @@ class MainActivity : AppCompatActivity() {
     }
     private fun updateSummary(total: Double?) {
         binding.tvTotalAmount.text = String.format("₹%.2f", total ?: 0.0)
+        val safeTotal = total ?: 0.0
+        binding.tvTotalAmount.text = String.format("₹%.2f", safeTotal)
+
+        // Apply the "Traffic Light" color logic here too!
+        val percentUsed = (safeTotal / MONTHLY_LIMIT) * 100
+        val color = when {
+            percentUsed >= 100 -> Color.parseColor("#B00020") // Red
+            percentUsed >= 80 -> Color.parseColor("#F9A825")  // Orange
+            else -> Color.parseColor("#6200EE")              // Purple
+        }
+        binding.cardSummary.setCardBackgroundColor(color)
     }
 }
