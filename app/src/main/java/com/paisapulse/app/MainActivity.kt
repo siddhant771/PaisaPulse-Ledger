@@ -1,12 +1,19 @@
 package com.paisapulse.app
 
 import android.Manifest
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.paisapulse.app.databinding.ActivityMainBinding
+import com.paisapulse.app.domain.models.CategorySum
+
 import com.paisapulse.app.presentation.ui.TransactionAdapter
 import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,6 +81,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.categoryTotals.observe(this) { totals ->
+            if (!totals.isNullOrEmpty()) {
+                setupChart(totals)
+            }
+        }
+
+
 
 
         // 5. Ask for Permission on startup
@@ -90,6 +104,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         androidx.recyclerview.widget.ItemTouchHelper(swipeHandler).attachToRecyclerView(binding.rvTransactions)
+    }
+    private fun setupChart(categorySums: List<CategorySum>) {
+        val entries = categorySums.map {
+            PieEntry(it.total.toFloat(), it.category)
+        }
+
+        val dataSet = PieDataSet(entries, "Spending").apply {
+            colors = ColorTemplate.MATERIAL_COLORS.toList()
+            valueTextSize = 12f
+            valueTextColor = Color.WHITE
+        }
+
+        binding.pieChart.apply {
+            data = PieData(dataSet)
+            centerText = "Expenses"
+            setCenterTextSize(18f)
+            description.isEnabled = false
+            animateY(1000) // Beautiful entrance animation
+            invalidate() // Refresh chart
+        }
     }
     private fun updateSummary(total: Double?) {
         binding.tvTotalAmount.text = String.format("₹%.2f", total ?: 0.0)

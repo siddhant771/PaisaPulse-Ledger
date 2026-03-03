@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.paisapulse.app.domain.repository.TransactionRepository
 import com.paisapulse.app.data.local.entities.TransactionEntity
+import com.paisapulse.app.domain.models.CategorySum
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,5 +35,6 @@ class TransactionViewModel @Inject constructor(
     fun getFilteredTotal(category: String): LiveData<Double?> {
         return repository.getTotalByCategory(category).asLiveData()
     }
+    val categoryTotals: LiveData<List<CategorySum>> = repository.getCategoryTotals().asLiveData()
 
 }

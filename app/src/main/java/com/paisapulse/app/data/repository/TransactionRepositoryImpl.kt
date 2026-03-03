@@ -4,6 +4,7 @@ package com.paisapulse.app.data.repository
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.domain.repository.TransactionRepository
 import com.paisapulse.app.local.dao.TransactionDao
+import com.paisapulse.app.domain.models.CategorySum
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -29,4 +30,6 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getTotalByCategory(category: String): Flow<Double?> {
         return transactionDao.getTotalByCategory(category)
     }
+    override fun getCategoryTotals(): Flow<List<CategorySum>> = transactionDao.getCategoryTotals()
+
 }

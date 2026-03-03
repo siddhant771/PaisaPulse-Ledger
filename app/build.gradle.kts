@@ -59,4 +59,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
     implementation("androidx.sqlite:sqlite:2.4.0")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

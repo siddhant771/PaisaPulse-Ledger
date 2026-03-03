@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.paisapulse.app.data.local.entities.TransactionEntity
+import com.paisapulse.app.domain.models.CategorySum
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,4 +25,6 @@ interface TransactionDao {
 
     @Query("SELECT SUM(amount) FROM transactions WHERE category = :category")
     fun getTotalByCategory(category: String): Flow<Double?>
+    @Query("SELECT category, SUM(amount) as total FROM transactions GROUP BY category")
+    fun getCategoryTotals(): Flow<List<CategorySum>>
 }
