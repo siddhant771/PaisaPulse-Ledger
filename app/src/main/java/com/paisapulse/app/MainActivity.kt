@@ -11,9 +11,11 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.databinding.ActivityMainBinding
 import com.paisapulse.app.domain.models.CategorySum
+import android.view.View
 
 import com.paisapulse.app.presentation.ui.TransactionAdapter
 import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
@@ -50,8 +52,14 @@ class MainActivity : AppCompatActivity() {
 
         // 4. Observe the Database (The Reactive Magic)
         viewModel.allTransactions.observe(this) { transactions ->
-            // DiffUtil works behind the scenes here to only refresh changed items
-            adapter.submitList(transactions)
+            if (transactions.isEmpty()) {
+                binding.rvTransactions.visibility = View.GONE
+                binding.emptyStateLayout.visibility = View.VISIBLE
+            } else {
+                binding.rvTransactions.visibility = View.VISIBLE
+                binding.emptyStateLayout.visibility = View.GONE
+                adapter.submitList(transactions)
+            }
         }
         binding.btnExport.setOnClickListener {
             // We use the ViewModel to get the non-flow list

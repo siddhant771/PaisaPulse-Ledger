@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp">
@@ -13,6 +13,19 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivCategoryIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_margin="12dp"
+            android:background="#F0F0F0"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@drawable/ic_restaurant" />
+
 
         <LinearLayout
             android:layout_width="0dp"
@@ -45,5 +58,6 @@
             android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
+
 
 </androidx.cardview.widget.CardView>

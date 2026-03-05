@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.paisapulse.app.R
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.databinding.ItemTransactionBinding
 
@@ -20,18 +21,28 @@ class TransactionAdapter : ListAdapter<TransactionEntity, TransactionAdapter.Vie
     }
 
     class ViewHolder(private val binding: ItemTransactionBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: TransactionEntity) {
-            binding.tvMerchant.text = item.merchant
+        fun bind(transaction: TransactionEntity) {
+            binding.tvMerchant.text = transaction.merchant
+            binding.tvAmount.text = "₹${transaction.amount}"
 
-            // 1. Format Currency to 2 decimal places (e.g., ₹500.00)
-            binding.tvAmount.text = String.format("₹%.2f", item.amount)
+            // Logic for dynamic icons
+            val iconRes = when (transaction.category) {
+                "Food" -> R.drawable.ic_restaurant
+                "Travel" -> R.drawable.ic_directions_car
+                "Bills" -> R.drawable.ic_receipt
+                else -> R.drawable.ic_payment
+            }
 
+            binding.ivCategoryIcon.setImageResource(iconRes)
 
-            // 2. Convert timestamp to a readable Date (e.g., 27 Feb, 09:10 PM)
-            val sdf = java.text.SimpleDateFormat("dd MMM, hh:mm a", java.util.Locale.getDefault())
-            val dateString = sdf.format(java.util.Date(item.timestamp))
-            binding.tvDate.text = "${item.category} • $dateString"
-
+            // Pro Tip: Change icon color based on category
+            val iconColor = when (transaction.category) {
+                "Food" -> "#FF9800" // Orange
+                "Travel" -> "#2196F3" // Blue
+                "Bills" -> "#F44336" // Red
+                else -> "#9C27B0" // Purple
+            }
+            binding.ivCategoryIcon.setColorFilter(android.graphics.Color.parseColor(iconColor))
         }
     }
 
