@@ -31,5 +31,9 @@ class TransactionRepositoryImpl @Inject constructor(
         return transactionDao.getTotalByCategory(category)
     }
     override fun getCategoryTotals(): Flow<List<CategorySum>> = transactionDao.getCategoryTotals()
+    // Inside TransactionRepositoryImpl
+    override suspend fun getAllTransactionsList(): List<TransactionEntity> {
+        return transactionDao.getAllTransactionsList()
+    }
 
 }

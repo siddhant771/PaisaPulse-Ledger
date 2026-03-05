@@ -13,4 +13,5 @@ interface TransactionRepository {
     fun getTotalByCategory(category: String): Flow<Double?>
     fun getTotalExpenses(): Flow<Double?>
     fun getCategoryTotals(): Flow<List<CategorySum>>
+    suspend fun getAllTransactionsList(): List<TransactionEntity>
 }

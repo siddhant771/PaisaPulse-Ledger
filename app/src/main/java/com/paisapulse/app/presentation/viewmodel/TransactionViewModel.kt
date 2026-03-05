@@ -36,5 +36,10 @@ class TransactionViewModel @Inject constructor(
         return repository.getTotalByCategory(category).asLiveData()
     }
     val categoryTotals: LiveData<List<CategorySum>> = repository.getCategoryTotals().asLiveData()
+    fun getExportData(callback: (List<TransactionEntity>) -> Unit) {
+        viewModelScope.launch {
+            callback(repository.getAllTransactionsList())
+        }
+    }
 
 }

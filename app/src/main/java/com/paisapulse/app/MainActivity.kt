@@ -11,6 +11,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.databinding.ActivityMainBinding
 import com.paisapulse.app.domain.models.CategorySum
 
@@ -51,6 +52,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.allTransactions.observe(this) { transactions ->
             // DiffUtil works behind the scenes here to only refresh changed items
             adapter.submitList(transactions)
+        }
+        binding.btnExport.setOnClickListener {
+            // We use the ViewModel to get the non-flow list
+            viewModel.getExportData { list ->
+                if (list.isNotEmpty()) {
+                    shareTransactionsCsv(list)
+                } else {
+                    Toast.makeText(this, "No data to export!", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         binding.chipGroupFilters.setOnCheckedChangeListener { _, checkedId ->
@@ -163,5 +174,36 @@ class MainActivity : AppCompatActivity() {
             else -> Color.parseColor("#6200EE")              // Purple
         }
         binding.cardSummary.setCardBackgroundColor(color)
+    }
+    private fun shareTransactionsCsv(transactions: List<TransactionEntity>) {
+        val csvHeader = "Date,Merchant,Amount,Category\n"
+        val csvBody = transactions.joinToString(separator = "\n") {
+            "${it.timestamp},${it.merchant},${it.amount},${it.category}"
+        }
+        val fullCsv = csvHeader + csvBody
+
+        try {
+            // 1. Create temporary file
+            val file = java.io.File(cacheDir, "PaisaPulse_Report.csv")
+            file.writeText(fullCsv)
+
+            // 2. Get Secure URI using FileProvider
+            val contentUri = androidx.core.content.FileProvider.getUriForFile(
+                this, "${packageName}.fileprovider", file
+            )
+
+            // 3. Create Share Intent
+            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/csv"
+                putExtra(android.content.Intent.EXTRA_SUBJECT, "PaisaPulse Expense Report")
+                putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+
+            startActivity(android.content.Intent.createChooser(intent, "Share Report via"))
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Export Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

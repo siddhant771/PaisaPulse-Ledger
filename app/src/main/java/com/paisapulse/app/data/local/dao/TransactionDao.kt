@@ -27,4 +27,6 @@ interface TransactionDao {
     fun getTotalByCategory(category: String): Flow<Double?>
     @Query("SELECT category, SUM(amount) as total FROM transactions GROUP BY category")
     fun getCategoryTotals(): Flow<List<CategorySum>>
+    @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
+    suspend fun getAllTransactionsList(): List<TransactionEntity>
 }
