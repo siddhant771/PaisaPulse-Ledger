@@ -20,6 +20,7 @@ import android.view.View
 import com.paisapulse.app.presentation.ui.TransactionAdapter
 import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint // REQUIRED: This lets Hilt inject the ViewModel
 class MainActivity : AppCompatActivity() {
@@ -51,7 +52,8 @@ class MainActivity : AppCompatActivity() {
         binding.rvTransactions.adapter = adapter
 
         // 4. Observe the Database (The Reactive Magic)
-        viewModel.allTransactions.observe(this) { transactions ->
+        viewModel.allTransactions.observe(this) { transactions: List<TransactionEntity> ->
+
             if (transactions.isEmpty()) {
                 binding.rvTransactions.visibility = View.GONE
                 binding.emptyStateLayout.visibility = View.VISIBLE
@@ -79,7 +81,9 @@ class MainActivity : AppCompatActivity() {
 
             when (checkedId) {
                 R.id.chipAll -> {
-                    viewModel.allTransactions.observe(this) { adapter.submitList(it) }
+                    viewModel.allTransactions.observe(this) { transactions: List<TransactionEntity> ->
+                        adapter.submitList(transactions)
+                    }
                     viewModel.totalExpenses.observe(this) { updateSummary(it) }
                 }
                 R.id.chipFood -> {
@@ -101,13 +105,12 @@ class MainActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s.toString().lowercase()
-                val fullList = viewModel.allTransactions.value ?: emptyList()
+                val query = s.toString().lowercase(Locale.getDefault())
+                val fullList: List<TransactionEntity> = viewModel.allTransactions.value ?: emptyList()
 
-                // Sift through the list in memory for instant results
-                val filtered = fullList.filter {
-                    it.merchant.lowercase().contains(query) ||
-                            it.category.lowercase().contains(query)
+                val filtered = fullList.filter { transaction ->
+                    transaction.merchant.lowercase(Locale.getDefault()).contains(query) ||
+                            transaction.category.lowercase(Locale.getDefault()).contains(query)
                 }
                 adapter.submitList(filtered)
             }

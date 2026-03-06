@@ -59,6 +59,9 @@ dependencies {
     kapt("androidx.room:room-compiler:2.7.0-alpha02")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
     implementation("androidx.sqlite:sqlite:2.4.0")
+    testImplementation("junit:junit:4.13.2")
+    implementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
