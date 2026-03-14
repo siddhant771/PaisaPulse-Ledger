@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# Hilt/Dagger rules
+-keep class * extends androidx.lifecycle.ViewModel
+-keep class com.paisapulse.app.data.local.entities.** { *; }
+
+# Room rules
+-keep class * extends androidx.room.RoomDatabase
+-dontwarn androidx.room.**

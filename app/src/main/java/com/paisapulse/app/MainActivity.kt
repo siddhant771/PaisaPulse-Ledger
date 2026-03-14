@@ -46,6 +46,8 @@ class MainActivity : AppCompatActivity() {
         // 2. Initialize ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        var navHostFragment= supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as androidx.navigation.fragment.NavHostFragment
+        var navController = navHostFragment.navController
 
         // 3. Setup RecyclerView
         val adapter = TransactionAdapter()
