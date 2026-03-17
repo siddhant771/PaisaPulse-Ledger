@@ -10,5 +10,6 @@ data class TransactionEntity(
     val amount: Double,        // The money value (e.g., 500.0)
     val merchant: String,      // Who you paid (e.g., Zomato)
     val timestamp: Long,       // The exact time of the SMS
-    val category: String = "General"
+    val category: String = "General",
+    val rawBody: String
 )

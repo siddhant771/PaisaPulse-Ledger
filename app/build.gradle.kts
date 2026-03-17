@@ -17,6 +17,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val apiKey = project.findProperty("GEMINI_API_KEY")?.toString() ?: ""
+        buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
+
     }
 
     buildTypes {
@@ -31,6 +34,8 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -52,6 +57,7 @@ dependencies {
     implementation(libs.androidx.uiautomator)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.generativeai)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -65,6 +71,9 @@ dependencies {
     implementation("androidx.sqlite:sqlite:2.4.0")
     testImplementation("junit:junit:4.13.2")
     implementation(kotlin("test"))
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
