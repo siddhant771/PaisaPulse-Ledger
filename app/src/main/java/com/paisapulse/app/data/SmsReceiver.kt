@@ -1,12 +1,12 @@
 package com.paisapulse.app.data
-
+import com.paisapulse.app.utils.SmsParser
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.domain.repository.TransactionRepository
-import com.paisapulse.app.utils.SmsParser
+
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +35,8 @@ class SmsReceiver : BroadcastReceiver() {
                         amount = amount,
                         merchant = sender,
                         timestamp = System.currentTimeMillis(),
-                        category = category
+                        category = category,
+                        rawBody = body
                     )
 
                     // Save to DB in a background thread
