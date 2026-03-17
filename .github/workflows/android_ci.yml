@@ -11,7 +11,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build and Test
-        run: ./gradlew assembleDebug test
+        run: ./gradlew assembleDebug test -Dandroid.useAndroidX=true -Dandroid.enableJetifier=true
         env:
           ORG_GRADLE_PROJECT_GEMINI_API_KEY: "${{ secrets.GEMINI_API_KEY }}"
           # This maps the GitHub Secret to a Gradle Property
