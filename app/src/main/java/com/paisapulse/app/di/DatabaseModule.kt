@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.paisapulse.app.data.local.AppDatabase
 
-import com.paisapulse.app.local.dao.TransactionDao
+import com.paisapulse.app.data.local.dao.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,7 +23,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "paisa_pulse_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides

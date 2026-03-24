@@ -1,4 +1,4 @@
-package com.paisapulse.app.local.dao
+package com.paisapulse.app.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
