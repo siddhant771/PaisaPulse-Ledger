@@ -6,6 +6,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -25,21 +26,20 @@ class AddTransactionViewModelTest {
     }
 
     @Test
+
     fun testWhenAmountIsZeroEmitError() = runTest {
-        // 1. Listen to the SharedFlow
         val results = mutableListOf<AddTransactionViewModel.UiEvent>()
 
-        // Use the correct Coroutine launch, NOT Activity launch
-        val job = launch {
-            viewModel.eventFlow.toList(results)
+        // Using backgroundScope ensures the collector stays alive during the test
+        backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.eventFlow.collect { results.add(it) }
         }
 
-        // 2. Trigger the action
+        // Trigger action
         viewModel.onSaveClicked("0.0", "Food")
 
-        // 3. Verify
-        assert(results.any { it is AddTransactionViewModel.UiEvent.ShowError })
-
-        job.cancel()
+        // Check results
+        val hasError = results.any { it is AddTransactionViewModel.UiEvent.ShowError }
+        assert(hasError) { "Expected ShowError event but received: $results" }
     }
 }
