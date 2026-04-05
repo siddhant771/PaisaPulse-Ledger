@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.paisapulse.app.domain.repository.TransactionRepository
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.domain.models.CategorySum
+import com.paisapulse.app.domain.repository.ITransactionRepository
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val repository: TransactionRepository
+    private val repository: ITransactionRepository
 ) : ViewModel() {
 
     // Converting Flow to LiveData for the XML View
@@ -36,10 +36,6 @@ class TransactionViewModel @Inject constructor(
         return repository.getTotalByCategory(category).asLiveData()
     }
     val categoryTotals: LiveData<List<CategorySum>> = repository.getCategoryTotals().asLiveData()
-    fun getExportData(callback: (List<TransactionEntity>) -> Unit) {
-        viewModelScope.launch {
-            callback(repository.getAllTransactionsList())
-        }
-    }
+    
 
 }

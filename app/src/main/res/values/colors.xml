@@ -7,4 +7,10 @@
     <color name="purple_primary">#8A2BE2</color>
     <color name="background_light">#F8F9FF</color>
     <color name="white">#FFFFFF</color>
+    <color name="navy_bg">#0F0C29</color>
+    <color name="glass_white">#26FFFFFF</color>
+    <color name="glass_stroke">#4DFFFFFF</color>
+    <color name="accent_cyan">#24FEEE</color>
+    <color name="text_main">#FFFFFF</color>
+    <color name="text_sub">#B3FFFFFF</color>
 </resources>

@@ -5,4 +5,64 @@ package com.paisapulse.app.ui.permission
 import androidx.fragment.app.Fragment
 import com.paisapulse.app.R
 
-class PermissionFragment : Fragment(R.layout.fragment_permission)
+
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+
+import androidx.navigation.fragment.findNavController
+
+import com.paisapulse.app.databinding.FragmentPermissionBinding
+
+class PermissionFragment : Fragment(R.layout.fragment_permission) {
+
+    private var _binding: FragmentPermissionBinding? = null
+    private val binding get() = _binding!!
+
+    // Modern Android API for requesting permissions
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions.entries.all { it.value }
+        if (granted) {
+            navigateToDashboard()
+        } else {
+            Toast.makeText(requireContext(), "Permissions required to track expenses", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        _binding = FragmentPermissionBinding.bind(view)
+
+        binding.btnAllow.setOnClickListener {
+            checkAndRequestPermissions()
+        }
+    }
+
+    private fun checkAndRequestPermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_SMS,
+            Manifest.permission.RECEIVE_SMS
+        )
+
+        if (permissions.all { ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED }) {
+            navigateToDashboard()
+        } else {
+            requestPermissionLauncher.launch(permissions)
+        }
+    }
+
+    private fun navigateToDashboard() {
+        findNavController().navigate(R.id.action_permission_to_dashboard)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+}

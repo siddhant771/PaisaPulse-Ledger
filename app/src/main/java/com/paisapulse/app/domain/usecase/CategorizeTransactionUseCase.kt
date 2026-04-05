@@ -11,7 +11,7 @@ import com.paisapulse.app.data.remote.models.GeminiRequest
 import com.paisapulse.app.data.remote.models.Content
 import com.paisapulse.app.data.remote.models.Part
 import com.paisapulse.app.data.sms.ParsedSms
-import com.paisapulse.app.local.dao.TransactionDao
+import com.paisapulse.app.data.local.dao.TransactionDao
 import javax.inject.Inject
 
 class CategorizeTransactionUseCase @Inject constructor(
