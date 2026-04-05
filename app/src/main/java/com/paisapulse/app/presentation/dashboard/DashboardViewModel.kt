@@ -16,7 +16,7 @@ class DashboardViewModel @Inject constructor(
 ) : ViewModel() {
 
     // SDE-3 Depth: Converting Double? to a Formatted String State
-    val totalBalanceState: StateFlow<String> = repository.getLiveTotalBalance()
+    val totalBalanceState: StateFlow<String> = repository.getTotalExpenses()
         .map { amount -> "₹ ${String.format("%.2f", amount ?: 0.0)}" }
         .stateIn(
             scope = viewModelScope,

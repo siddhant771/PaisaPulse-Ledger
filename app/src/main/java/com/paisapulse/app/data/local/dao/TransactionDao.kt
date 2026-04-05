@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.domain.models.CategorySum
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,8 @@ interface TransactionDao {
     fun getAllTransactions(): Flow<List<TransactionEntity>>
     @Delete
     suspend fun deleteTransaction(transaction: TransactionEntity)
+    @Query("UPDATE transactions SET currentBalance = currentBalance - :amount")
+    suspend fun subtractFromBalance(amount: Double)
     @Query("SELECT SUM(amount) FROM transactions")
     fun getTotalExpenses(): Flow<Double?>
     @Query("SELECT * FROM transactions WHERE category = :category ORDER BY timestamp DESC")
@@ -29,4 +32,9 @@ interface TransactionDao {
     fun getCategoryTotals(): Flow<List<CategorySum>>
     @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
     suspend fun getAllTransactionsList(): List<TransactionEntity>
+    @Transaction
+    suspend fun addExpenseWithUpdate(transaction: TransactionEntity) {
+        insertTransaction(transaction)
+        subtractFromBalance(transaction.amount)
+    }
 }

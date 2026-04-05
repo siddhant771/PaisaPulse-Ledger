@@ -45,36 +45,43 @@ android {
         jvmTarget = "11"
     }
 }
-
 dependencies {
-
+    // UI & Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.filament.android)
-    implementation(libs.androidx.uiautomator)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
-    implementation(libs.generativeai)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    // Dependency Injection (Hilt)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation("androidx.room:room-runtime:2.7.0-alpha02")
-    implementation("androidx.room:room-ktx:2.7.0-alpha02")
-    kapt("androidx.room:room-compiler:2.7.0-alpha02")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.0")
-    implementation("androidx.sqlite:sqlite:2.4.0")
-    testImplementation("junit:junit:4.13.2")
-    implementation(kotlin("test"))
+
+    // STABLE Database (Room) - Changed from Alpha to 2.6.1
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+
+    // Network
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:2.0.21")
-    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
+
+    // Local Unit Testing (This is where your MockK test lives!)
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // UI Testing
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.uiautomator)
+
+    // Charts & AI
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation(libs.generativeai)
 }
