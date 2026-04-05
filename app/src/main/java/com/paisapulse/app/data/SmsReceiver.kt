@@ -5,6 +5,7 @@ import android.content.Intent
 import android.provider.Telephony
 import com.paisapulse.app.data.local.entities.TransactionEntity
 import com.paisapulse.app.domain.repository.ITransactionRepository
+import com.paisapulse.app.utils.SMSUtils
 
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -23,8 +24,8 @@ class SmsReceiver : BroadcastReceiver() {
             val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
             for (message in messages) {
                 val body = message.messageBody
-                val amount = SmsParser.parseAmount(body)
-                val category = SmsParser.getCategory(body)
+                val amount = SMSUtils.parseAmount(body)
+                val category = SMSUtils.getCategory(body)
 
                 if (amount != null) {
                     // Logic to extract merchant from sender address
