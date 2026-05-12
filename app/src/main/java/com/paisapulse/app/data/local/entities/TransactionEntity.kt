@@ -12,5 +12,6 @@ data class TransactionEntity(
     val timestamp: Long,       // The exact time of the SMS
     val category: String = "General",
     val rawBody: String,
-    val currentBalance: Double = 0.0 // New field to store the current balance after this transaction
+    val currentBalance: Double = 0.0,
+    val isRecurring: Boolean = false// New field to store the current balance after this transaction
 )

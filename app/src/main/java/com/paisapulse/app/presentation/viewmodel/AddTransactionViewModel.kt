@@ -3,6 +3,7 @@ package com.paisapulse.app.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.paisapulse.app.data.local.entities.TransactionEntity
+import com.paisapulse.app.domain.BudgetDefaults
 import com.paisapulse.app.domain.repository.ITransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -30,13 +31,9 @@ class AddTransactionViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            val totalSpentSoFar = repository.getAllTransactionsList().sumOf { transaction: TransactionEntity ->
-                transaction.amount
-            }
-            val startingBudget = 15000.0
-
-            // THIS IS THE MISSING LINE:
-            val calculatedBalance = startingBudget - (totalSpentSoFar + amount)
+            val totalSpentSoFar = repository.getAllTransactionsList().sumOf { it.amount }
+            val calculatedBalance =
+                BudgetDefaults.STARTING_BUDGET - (totalSpentSoFar + amount)
             val transaction = TransactionEntity(
                 amount = amount,
                 category = category,

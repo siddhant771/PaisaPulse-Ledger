@@ -8,9 +8,20 @@
     <color name="background_light">#F8F9FF</color>
     <color name="white">#FFFFFF</color>
     <color name="navy_bg">#0F0C29</color>
+    <color name="dark_background">#121212</color>
+
     <color name="glass_white">#26FFFFFF</color>
     <color name="glass_stroke">#4DFFFFFF</color>
+    <color name="light_gray">#B0B0B0</color>
     <color name="accent_cyan">#24FEEE</color>
     <color name="text_main">#FFFFFF</color>
     <color name="text_sub">#B3FFFFFF</color>
+    <color name="purple_brand">#800080</color>
+    <color name="purple_brand_dark">#4B0082</color>
+    <color name="purple_brand_light">#E0B0FF</color>
+
+    <color name="background_gray">#F8F9FA</color>
+    <color name="card_white">#FFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
 </resources>

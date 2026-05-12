@@ -28,5 +28,60 @@
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.paisapulse.app.ui.dashboard.DashboardFragment"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard">
+        <action
+            android:id="@+id/action_dashboard_to_search"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_settings"
+            app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_aiCoach"
+            app:destination="@id/aiCoachFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_export"
+            app:destination="@id/exportFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_aiInsights"
+            app:destination="@id/aiInsightsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.paisapulse.app.ui.search.SearchFragment"
+        tools:layout="@layout/fragment_search" />
+
+    <fragment
+        android:id="@+id/aiCoachFragment"
+        android:name="com.paisapulse.app.ui.aicoach.AiCoachFragment"
+        tools:layout="@layout/fragment_ai_coach">
+        <action
+            android:id="@+id/action_aiCoach_to_dashboard"
+            app:destination="@id/dashboardFragment" />
+        <action
+            android:id="@+id/action_aiCoach_to_export"
+            app:destination="@id/exportFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/aiInsightsFragment"
+        android:name="com.paisapulse.app.ui.aiinsights.AiInsightsFragment"
+        tools:layout="@layout/fragment_ai_insights" />
+
+    <fragment
+        android:id="@+id/exportFragment"
+        android:name="com.paisapulse.app.ui.export.ExportFragment"
+        tools:layout="@layout/fragment_export">
+        <action
+            android:id="@+id/action_export_to_dashboard"
+            app:destination="@id/dashboardFragment" />
+        <action
+            android:id="@+id/action_export_to_aiCoach"
+            app:destination="@id/aiCoachFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.paisapulse.app.ui.settings.SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

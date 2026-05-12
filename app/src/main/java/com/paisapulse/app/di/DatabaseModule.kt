@@ -3,6 +3,8 @@ package com.paisapulse.app.di
 import android.content.Context
 import androidx.room.Room
 import com.paisapulse.app.data.local.AppDatabase
+import com.paisapulse.app.data.local.AppDatabase.Companion.MIGRATION_3_4
+import com.paisapulse.app.data.local.AppDatabase.Companion.MIGRATION_4_5
 
 import com.paisapulse.app.data.local.dao.TransactionDao
 import dagger.Module
@@ -23,7 +25,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "paisa_pulse_db"
-        ).fallbackToDestructiveMigration().build()
+        ).addMigrations(MIGRATION_3_4, MIGRATION_4_5).build()
     }
 
     @Provides

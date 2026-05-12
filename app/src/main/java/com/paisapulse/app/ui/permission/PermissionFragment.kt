@@ -7,6 +7,9 @@ import com.paisapulse.app.R
 
 
 import android.Manifest
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -31,7 +34,7 @@ class PermissionFragment : Fragment(R.layout.fragment_permission) {
         if (granted) {
             navigateToDashboard()
         } else {
-            Toast.makeText(requireContext(), "Permissions required to track expenses", Toast.LENGTH_SHORT).show()
+            showDeniedState()
         }
     }
 
@@ -42,6 +45,10 @@ class PermissionFragment : Fragment(R.layout.fragment_permission) {
         binding.btnAllow.setOnClickListener {
             checkAndRequestPermissions()
         }
+        binding.btnNotNow.setOnClickListener {
+            navigateToDashboard()
+        }
+        binding.tvOfflineHint.visibility = if (isOffline()) View.VISIBLE else View.GONE
     }
 
     private fun checkAndRequestPermissions() {
@@ -59,6 +66,22 @@ class PermissionFragment : Fragment(R.layout.fragment_permission) {
 
     private fun navigateToDashboard() {
         findNavController().navigate(R.id.action_permission_to_dashboard)
+    }
+
+    private fun showDeniedState() {
+        binding.tvPermissionTitle.text = "SMS Permission Denied"
+        binding.tvPermissionDesc.text =
+            "Without SMS permission, automatic tracking is disabled. You can continue with manual entry."
+        binding.btnAllow.text = "Grant Permission"
+        binding.btnNotNow.text = "Continue with Manual Entry"
+        Toast.makeText(requireContext(), "Permission denied. You can enable it later from settings.", Toast.LENGTH_LONG).show()
+    }
+
+    private fun isOffline(): Boolean {
+        val cm = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetwork ?: return true
+        val caps = cm.getNetworkCapabilities(network) ?: return true
+        return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     override fun onDestroyView() {

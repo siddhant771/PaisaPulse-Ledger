@@ -1,33 +1,52 @@
 package com.paisapulse.app
 
-import android.Manifest
-import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
+import androidx.biometric.BiometricPrompt
 import androidx.appcompat.app.AppCompatActivity
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
-
-import com.paisapulse.app.data.local.entities.TransactionEntity
-import com.paisapulse.app.databinding.ActivityMainBinding
-import com.paisapulse.app.domain.models.CategorySum
-import android.view.View
-
-import com.paisapulse.app.presentation.ui.TransactionAdapter
-import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
+import androidx.core.content.ContextCompat
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+    private var isUnlocked = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Ensure this layout contains a <androidx.fragment.app.FragmentContainerView>
         setContentView(R.layout.activity_main)
+
+        showBiometricPrompt()
+    }
+
+    private fun unlockUi() {
+        if (!isUnlocked) {
+            isUnlocked = true
+        }
+    }
+
+    private fun showBiometricPrompt() {
+        val executor = ContextCompat.getMainExecutor(this)
+        val biometricPrompt = BiometricPrompt(
+            this,
+            executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    unlockUi()
+                }
+
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    finish()
+                }
+            }
+        )
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("PaisaPulse Security")
+            .setSubtitle("Log in using your biometric credential")
+            .setNegativeButtonText("Exit")
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
     }
 }
