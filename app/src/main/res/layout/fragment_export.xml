@@ -265,7 +265,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:contentDescription="Chat"
-            android:src="@android:drawable/ic_menu_chat"
+            android:src="@drawable/ic_menu_chat"
             app:tint="@color/text_secondary" />
 
         <ImageButton

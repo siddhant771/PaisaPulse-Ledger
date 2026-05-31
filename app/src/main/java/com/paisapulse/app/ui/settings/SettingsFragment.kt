@@ -34,7 +34,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         }
         
         binding.btnSmsPermissions.setOnClickListener {
-            // Navigate to SMS permissions
+            findNavController().navigate(R.id.action_settings_to_permission)
         }
         
         binding.btnDataPrivacy.setOnClickListener {

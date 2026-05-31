@@ -83,5 +83,9 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.paisapulse.app.ui.settings.SettingsFragment"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/action_settings_to_permission"
+            app:destination="@id/permissionFragment" />
+    </fragment>
 </navigation>

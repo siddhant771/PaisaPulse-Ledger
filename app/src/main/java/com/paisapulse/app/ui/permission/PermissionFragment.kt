@@ -42,6 +42,8 @@ class PermissionFragment : Fragment(R.layout.fragment_permission) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPermissionBinding.bind(view)
 
+        resetPermissionScreen()
+
         binding.btnAllow.setOnClickListener {
             checkAndRequestPermissions()
         }
@@ -71,10 +73,18 @@ class PermissionFragment : Fragment(R.layout.fragment_permission) {
     private fun showDeniedState() {
         binding.tvPermissionTitle.text = "SMS Permission Denied"
         binding.tvPermissionDesc.text =
-            "Without SMS permission, automatic tracking is disabled. You can continue with manual entry."
+            "FinSecure needs SMS access to automatically track your transactions. Without this permission, the app will still work with manual entry."
         binding.btnAllow.text = "Grant Permission"
         binding.btnNotNow.text = "Continue with Manual Entry"
         Toast.makeText(requireContext(), "Permission denied. You can enable it later from settings.", Toast.LENGTH_LONG).show()
+    }
+
+    private fun resetPermissionScreen() {
+        binding.tvPermissionTitle.text = "SMS Permission Required"
+        binding.tvPermissionDesc.text =
+            "FinSecure needs access to your SMS messages to automatically track your transactions from bank notifications."
+        binding.btnAllow.text = "Allow SMS Access"
+        binding.btnNotNow.text = "Not Now"
     }
 
     private fun isOffline(): Boolean {
