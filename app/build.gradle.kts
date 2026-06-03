@@ -4,6 +4,8 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.compose")
+
 }
 
 android {
@@ -17,8 +19,16 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
+
+
+        val apiKey = project.properties["GEMINI_API_KEY"] ?: ""
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
+
+
     }
 
     buildTypes {
@@ -32,12 +42,17 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+
+            freeCompilerArgs.addAll(
+                listOf("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+            )
+        }
     }
     buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = "1.5.8" }
+
 }
 
 dependencies {
@@ -46,6 +61,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
+
 
     // Dagger Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -60,4 +76,5 @@ dependencies {
     // Coroutines & Reactive Streams
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 }
