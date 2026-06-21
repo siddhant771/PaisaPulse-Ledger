@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 
 
-# In main.py
+
 from backend.security import AuthMiddleware
 from backend.schemas import SmsProcessRequest, StructuredTransaction
 app = FastAPI(
@@ -14,6 +14,13 @@ app.add_middleware(AuthMiddleware)
 async def health():
     return {"status":"ok"}
 @app.post("/api/v1/process", response_model=StructuredTransaction)
+@app.exception_handler(Exception)
+async def global_exception_handler(request:Request,exc:Exception):
+    print(f"CRITICAL ERROR: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"error": "An internal server error occurred. Please try again later."},
+    )
 
 async def process_sms(request: SmsProcessRequest):
     # For now, we return a mock response. 
