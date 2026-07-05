@@ -1,7 +1,5 @@
 package com.paisapulse.app.data.utils
 
-
-
 import java.util.regex.Pattern
 
 object SmsParser {

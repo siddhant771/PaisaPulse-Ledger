@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
 import android.util.Log
-import com.paisapulse.app.data.ai.AiCategorizer
 import com.paisapulse.app.data.local.TransactionDao
 import com.paisapulse.app.data.local.TransactionEntity
 import com.paisapulse.app.data.utils.SmsParser
+import com.paisapulse.app.data.ai.AiCategorizer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +22,10 @@ class SmsReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var transactionDao: TransactionDao
-    @Inject
-    lateinit var aiCategorizer: AiCategorizer
 
-    // Safe, non-blocking background lifecycle scope for Broadcast Receivers
+    @Inject
+    lateinit var aiCategorizer: AiCategorizer // Day 3 AI Injection Hook
+
     private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -33,25 +33,29 @@ class SmsReceiver : BroadcastReceiver() {
             val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
             for (sms in messages) {
                 val body = sms.displayMessageBody ?: continue
-
-                // Route message straight to our internal parser logic
                 val parsedResult = SmsParser.parseIncomingSms(body)
 
                 if (parsedResult != null) {
                     receiverScope.launch {
-                        val aiDetectedCategory = aiCategorizer.categorizeMerchant(parsedResult.merchant)
-                        val newTransaction = TransactionEntity(
-                            amount = parsedResult.amount,
-                            category = aiDetectedCategory,
-                            merchant = parsedResult.merchant,
-                            timestamp = System.currentTimeMillis(),
-                            uniqueRemoteUuid = UUID.randomUUID().toString(),
-                            isSynced = false
-                        )
+                        try {
+                            // AI-only categorization - no fallback
+                            val aiDetectedCategory = aiCategorizer.categorizeMerchant(parsedResult.merchant)
 
-                        // Push straight to Room SQLite
-                        transactionDao.insertTransaction(newTransaction)
-                        Log.d("PaisaPulseFlow", "Successfully Intercepted & Saved: ₹${newTransaction.amount} spent at ${newTransaction.merchant}")
+                            val newTransaction = TransactionEntity(
+                                amount = parsedResult.amount,
+                                category = aiDetectedCategory,
+                                merchant = parsedResult.merchant,
+                                timestamp = System.currentTimeMillis(),
+                                uniqueRemoteUuid = UUID.randomUUID().toString(),
+                                isSynced = false
+                            )
+
+                            transactionDao.insertTransaction(newTransaction)
+                            Log.d("PaisaPulseFlow", "✅ AI Classification Success! Saved: ₹${newTransaction.amount} categorized as [$aiDetectedCategory] at ${newTransaction.merchant}")
+                        } catch (e: Exception) {
+                            Log.e("PaisaPulseFlow", "❌ Failed to categorize transaction '${parsedResult.merchant}': ${e.localizedMessage}. Transaction not saved.")
+                            // Transaction is not saved if AI fails - user wants AI-only categorization
+                        }
                     }
                 }
             }

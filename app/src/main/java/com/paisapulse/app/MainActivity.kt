@@ -1,29 +1,41 @@
 package com.paisapulse.app
 
 import android.Manifest
-import android.graphics.Color
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
-
-import com.paisapulse.app.data.local.entities.TransactionEntity
-import com.paisapulse.app.databinding.ActivityMainBinding
-import com.paisapulse.app.domain.models.CategorySum
-import android.view.View
-
-import com.paisapulse.app.presentation.ui.TransactionAdapter
-import com.paisapulse.app.presentation.viewmodel.TransactionViewModel
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.core.content.ContextCompat
+import com.paisapulse.app.ui.dashboard.DashboardScreen
+import com.paisapulse.app.ui.dashboard.DashboardViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+// ... your existing imports
+import android.widget.Button // ADD THIS IMPORT
+import android.view.ViewGroup // ADD THIS IMPORT
+import androidx.lifecycle.viewmodel.compose.viewModel
 
-@AndroidEntryPoint // REQUIRED: This lets Hilt inject the ViewModel
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+
+    // ... your existing viewModel and permission code
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 1. Setup the UI Content first (Compose)
+        setContent {
+            MaterialTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    DashboardScreen(viewModel())
+                }
+            }
+        }
 
 
     }
