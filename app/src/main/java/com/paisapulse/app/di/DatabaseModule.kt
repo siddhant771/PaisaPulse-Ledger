@@ -2,9 +2,8 @@ package com.paisapulse.app.di
 
 import android.content.Context
 import androidx.room.Room
-import com.paisapulse.app.data.local.AppDatabase
-
-import com.paisapulse.app.local.dao.TransactionDao
+import com.paisapulse.app.data.local.PaisaPulseDatabase
+import com.paisapulse.app.data.local.TransactionDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,14 +17,18 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+    fun providePaisaPulseDatabase(@ApplicationContext context: Context): PaisaPulseDatabase {
         return Room.databaseBuilder(
             context,
-            AppDatabase::class.java,
-            "paisa_pulse_db"
-        ).build()
+            PaisaPulseDatabase::class.java,
+            "paisapulse_db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
-    fun provideTransactionDao(db: AppDatabase): TransactionDao = db.transactionDao()
+    fun provideTransactionDao(database: PaisaPulseDatabase): TransactionDao {
+        return database.transactionDao()
+    }
 }

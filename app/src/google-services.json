@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "974856056263",
+    "firebase_url": "https://urlshortener2-ba962-default-rtdb.firebaseio.com",
+    "project_id": "urlshortener2-ba962",
+    "storage_bucket": "urlshortener2-ba962.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974856056263:android:6f9baff307316b27633de2",
+        "android_client_info": {
+          "package_name": "com.paisapulse.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEvwgktTXbAOQucJRzdGs2tMQE1JYOaRM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

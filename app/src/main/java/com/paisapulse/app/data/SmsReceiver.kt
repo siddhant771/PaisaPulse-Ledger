@@ -4,43 +4,58 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import com.paisapulse.app.data.local.entities.TransactionEntity
-import com.paisapulse.app.domain.repository.TransactionRepository
-import com.paisapulse.app.utils.SmsParser
+import android.util.Log
+import com.paisapulse.app.data.local.TransactionDao
+import com.paisapulse.app.data.local.TransactionEntity
+import com.paisapulse.app.data.utils.SmsParser
+import com.paisapulse.app.data.ai.AiCategorizer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
-@AndroidEntryPoint // This tells Hilt to allow injection here
+@AndroidEntryPoint
 class SmsReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var repository: TransactionRepository
+    lateinit var transactionDao: TransactionDao
+
+    @Inject
+    lateinit var aiCategorizer: AiCategorizer // Day 3 AI Injection Hook
+
+    private val receiverScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
             val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-            for (message in messages) {
-                val body = message.messageBody
-                val amount = SmsParser.parseAmount(body)
-                val category = SmsParser.getCategory(body)
+            for (sms in messages) {
+                val body = sms.displayMessageBody ?: continue
+                val parsedResult = SmsParser.parseIncomingSms(body)
 
-                if (amount != null) {
-                    // Logic to extract merchant from sender address
-                    val sender = message.displayOriginatingAddress ?: "Unknown"
+                if (parsedResult != null) {
+                    receiverScope.launch {
+                        try {
+                            // AI-only categorization - no fallback
+                            val aiDetectedCategory = aiCategorizer.categorizeMerchant(parsedResult.merchant)
 
-                    val transaction = TransactionEntity(
-                        amount = amount,
-                        merchant = sender,
-                        timestamp = System.currentTimeMillis(),
-                        category = category
-                    )
+                            val newTransaction = TransactionEntity(
+                                amount = parsedResult.amount,
+                                category = aiDetectedCategory,
+                                merchant = parsedResult.merchant,
+                                timestamp = System.currentTimeMillis(),
+                                uniqueRemoteUuid = UUID.randomUUID().toString(),
+                                isSynced = false
+                            )
 
-                    // Save to DB in a background thread
-                    CoroutineScope(Dispatchers.IO).launch {
-                        repository.saveTransaction(transaction)
+                            transactionDao.insertTransaction(newTransaction)
+                            Log.d("PaisaPulseFlow", "✅ AI Classification Success! Saved: ₹${newTransaction.amount} categorized as [$aiDetectedCategory] at ${newTransaction.merchant}")
+                        } catch (e: Exception) {
+                            Log.e("PaisaPulseFlow", "❌ Failed to categorize transaction '${parsedResult.merchant}': ${e.localizedMessage}. Transaction not saved.")
+                            // Transaction is not saved if AI fails - user wants AI-only categorization
+                        }
                     }
                 }
             }
