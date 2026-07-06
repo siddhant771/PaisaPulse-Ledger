@@ -5,16 +5,14 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "transactions",
-    indices = [Index(value = ["uniqueRemoteUuid"], unique = true)]
+    tableName = "transactions"
+
 )
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Int = 0,
     val amount: Double,
     val category: String,
-    val merchant: String,
-    val timestamp: Long,
-    val uniqueRemoteUuid: String,
-    val isSynced: Boolean = false
+    val date: Long,
+    val isExpense: Boolean
 )

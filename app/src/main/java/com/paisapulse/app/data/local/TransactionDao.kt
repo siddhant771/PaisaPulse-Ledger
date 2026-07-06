@@ -12,15 +12,8 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: TransactionEntity)
 
-    @Query("SELECT * FROM transactions ORDER BY timestamp DESC")
+    @Query("SELECT * FROM transactions ORDER BY date DESC")
     fun getAllTransactions(): Flow<List<TransactionEntity>>
 
-    @Query("SELECT * FROM transactions WHERE isSynced = 0")
-    suspend fun getUnsyncedTransactions(): List<TransactionEntity>
 
-    @Query("UPDATE transactions SET isSynced = 1 WHERE uniqueRemoteUuid = :uuid")
-    suspend fun markAsSynced(uuid: String)
-
-    @Query("SELECT SUM(amount) FROM transactions WHERE timestamp >= :startTimestamp")
-    fun getTransactionsSumSince(startTimestamp: Long): Flow<Double?>
 }

@@ -80,6 +80,7 @@ dependencies {
 
     // Dagger Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation(libs.androidx.lifecycle.runtime.compose)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0") // FIXED: Added missing AndroidX Hilt Compiler!
