@@ -96,4 +96,15 @@ dependencies {
 
     // Google GenAI SDK for Gemini Core
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+    // Retrofit & Networking
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0") // Moshi is preferred for Kotlin
+
+    // OkHttp & Logging
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    implementation("com.patrykandpatrick.vico:compose-m3:2.0.0-alpha.18")
 }
