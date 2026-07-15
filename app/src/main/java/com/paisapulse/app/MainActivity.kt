@@ -18,25 +18,54 @@ import dagger.hilt.android.AndroidEntryPoint
 // ... your existing imports
 import android.widget.Button // ADD THIS IMPORT
 import android.view.ViewGroup // ADD THIS IMPORT
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+// Change this import
+import androidx.fragment.app.FragmentActivity
+import com.paisapulse.app.ui.security.authenticateUser
+import com.paisapulse.app.ui.theme.PaisaPulseTheme
 
-    // ... your existing viewModel and permission code
+@AndroidEntryPoint
+class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 1. Setup the UI Content first (Compose)
         setContent {
-            MaterialTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    DashboardScreen(viewModel())
+            PaisaPulseTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color=MaterialTheme.colorScheme.background
+                ){
+                    var isAuthenticated by remember { mutableStateOf(false) }
+                    if (isAuthenticated) {
+                        DashboardScreen()
+                    } else {
+                        // Simple "Unlock" Screen
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            Button(onClick = {
+                                authenticateUser(this@MainActivity) { isAuthenticated = true }
+                            }) {
+                                Text("Unlock PaisaPulse")
+                            }
+                        }
+                    }
+
                 }
             }
+
+
+
         }
-
-
     }
 }

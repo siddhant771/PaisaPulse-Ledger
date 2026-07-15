@@ -13,7 +13,7 @@ plugins {
 
 android {
     namespace = "com.paisapulse.app"
-    compileSdk = 35 // Optimized to a stable production SDK target
+    compileSdk = 37 // Optimized to a stable production SDK target
 
     defaultConfig {
         applicationId = "com.paisapulse.app"
@@ -77,10 +77,12 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // Dagger Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.ui.graphics)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0") // FIXED: Added missing AndroidX Hilt Compiler!
@@ -103,6 +105,7 @@ dependencies {
     // OkHttp & Logging
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
