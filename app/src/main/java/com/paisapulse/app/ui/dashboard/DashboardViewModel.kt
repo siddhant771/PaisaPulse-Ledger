@@ -14,12 +14,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.paisapulse.app.data.local.TransactionDao
 import com.paisapulse.app.data.local.TransactionEntity
+import com.paisapulse.app.data.repository.ExportRepository
 import com.paisapulse.app.data.repository.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -33,6 +36,8 @@ class DashboardViewModel @Inject constructor(
     private val repository: TransactionRepository
 ) : ViewModel() {
     // In DashboardViewModel
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     private val _currentMonth = MutableStateFlow(LocalDate.now().monthValue)
     val currentMonth: StateFlow<Int> = _currentMonth
 
@@ -51,6 +56,13 @@ class DashboardViewModel @Inject constructor(
     fun setMonth(month: Int) {
         _currentMonth.value = month
     }
+    init{
+        viewModelScope.launch {
+            _isLoading.value=true
+            kotlinx.coroutines.delay(500)
+            _isLoading.value=false
+        }
+    }
 
     // Automatically listens to Room updates and recalculates totals instantly
     val transactions : StateFlow<List<TransactionEntity>> = repository.allTransactions
@@ -66,6 +78,14 @@ class DashboardViewModel @Inject constructor(
         }
 
 
+    }
+    fun exportTransactions(onResult:(String)->Unit){
+        viewModelScope.launch{
+            val transactions = repository.allTransactions.first()
+            val csvData= ExportRepository().generateCsv(transactions)
+            onResult(csvData)
+
+        }
     }
 
     val categoryTotals: StateFlow<Map<String, Double>> = transactions
