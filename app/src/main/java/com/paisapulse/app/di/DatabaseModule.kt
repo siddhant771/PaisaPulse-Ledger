@@ -23,7 +23,7 @@ object DatabaseModule {
             PaisaPulseDatabase::class.java,
             "paisapulse_db"
         )
-            .fallbackToDestructiveMigration()
+            .addMigrations(PaisaPulseDatabase.MIGRATION_2_3, PaisaPulseDatabase.MIGRATION_3_4)
             .build()
     }
 
