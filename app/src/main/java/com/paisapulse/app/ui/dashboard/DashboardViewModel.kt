@@ -67,14 +67,9 @@ class DashboardViewModel @Inject constructor(
     // Automatically listens to Room updates and recalculates totals instantly
     val transactions : StateFlow<List<TransactionEntity>> = repository.allTransactions
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    fun addTransaction(transaction: TransactionEntity){
+    fun addTransaction(amount:Double,description: String,category: String,isExpense:Boolean,date: Long){
         viewModelScope.launch{
-            repository.insertTransaction(transaction)
-        }
-    }
-    fun addTransaction(amount:Double,description: String,isExpense:Boolean,date: Long){
-        viewModelScope.launch{
-            repository.insertTransactionWithCategory(amount,description,isExpense,date)
+            repository.addManualTransaction(amount,description,category,isExpense,date)
         }
 
 
@@ -95,6 +90,11 @@ class DashboardViewModel @Inject constructor(
                 .mapValues { entry -> entry.value.sumOf { it.amount } }
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyMap())
+
+    fun deleteTransaction(transactionId: Int) {
+        viewModelScope.launch { repository.deleteTransaction(transactionId) }
+    }
+    fun updateTransaction(transaction: TransactionEntity) { viewModelScope.launch { repository.updateTransaction(transaction) } }
 
 }
 @Composable

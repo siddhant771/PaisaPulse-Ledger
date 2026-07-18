@@ -13,61 +13,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import com.paisapulse.app.data.local.TransactionEntity
 
 @Composable
-fun AddTransactionDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (amount:Double ,description:String,isExpense:Boolean) -> Unit
-){
-    var amount by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var isExpense by remember { mutableStateOf(false) }
+fun AddTransactionDialog(onDismiss: () -> Unit, onConfirm: (Double, String, String, Boolean) -> Unit, existing: TransactionEntity? = null) {
+    var amount by remember { mutableStateOf(existing?.amount?.toString().orEmpty()) }
+    var description by remember { mutableStateOf(existing?.description.orEmpty()) }
+    var category by remember { mutableStateOf(existing?.category ?: "Food") }
+    var isExpense by remember { mutableStateOf(existing?.isExpense ?: true) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Transaction")},
-        text = {
-            Column{
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Description") }
-                )
-                OutlinedTextField(
-                    value=amount,
-                    onValueChange = {amount=it},
-                    label = {Text("Amount")}
-
-
-                )
-                Row(
-                    verticalAlignment= Alignment.CenterVertically
-                ){
-                    Text("Expense")
-                    Switch(
-                        checked=isExpense,
-                        onCheckedChange = {isExpense=it}
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            Button(onClick = {
-                onConfirm(amount.toDoubleOrNull() ?: 0.0, description, isExpense)
-                onDismiss()
-            }){
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss){
-                Text("Cancel")
-            }
-        }
-
-
+        title = { Text(if (existing == null) "Add transaction" else "Edit transaction") },
+        text = { Column {
+            OutlinedTextField(description, { description = it }, label = { Text("Description") })
+            OutlinedTextField(amount, { amount = it }, label = { Text("Amount") })
+            OutlinedTextField(category, { category = it }, label = { Text("Category") })
+            Row(verticalAlignment = Alignment.CenterVertically) { Text("Expense"); Switch(isExpense, { isExpense = it }) }
+        } },
+        confirmButton = { Button(onClick = {
+            val parsed = amount.toDoubleOrNull()
+            if (parsed != null && parsed > 0 && description.isNotBlank()) onConfirm(parsed, description.trim(), category.trim(), isExpense)
+        }) { Text("Save") } },
+        dismissButton = { Button(onClick = onDismiss) { Text("Cancel") } }
     )
-
 }
-
-
-
