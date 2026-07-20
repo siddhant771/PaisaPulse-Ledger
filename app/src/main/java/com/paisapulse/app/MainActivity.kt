@@ -9,10 +9,12 @@ import androidx.biometric.BiometricPrompt
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -114,12 +116,12 @@ private fun AppLockScreen(onUnlock: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("PaisaPulse", style = MaterialTheme.typography.displaySmall)
+        Text("PaisaPulse", style = MaterialTheme.typography.displaySmall, fontWeight = androidx.compose.ui.text.font.FontWeight.ExtraBold)
         Text(
             "Your financial data is protected.",
             modifier = Modifier.padding(top = 10.dp, bottom = 24.dp),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Button(onClick = onUnlock) { Text("Unlock securely") }
+        Button(onClick = onUnlock, modifier = Modifier.fillMaxWidth(), contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) { Text("Unlock securely") }
     }
 }

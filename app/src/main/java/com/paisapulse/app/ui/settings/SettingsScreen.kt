@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
@@ -22,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,12 +52,15 @@ fun SettingsScreen(onBack: () -> Unit) {
     var biometricEnabled by remember { mutableStateOf(BiometricPreferences.isEnabled(context)) }
 
     Column(
-        Modifier.fillMaxSize().padding(horizontal = 20.dp),
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Row(Modifier.fillMaxWidth().padding(top = 14.dp), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "Back") }
-            Column(Modifier.padding(start = 6.dp)) {
+        Column(Modifier.fillMaxWidth().padding(top = 14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = onBack, contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 10.dp), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.primary)) {
+                Icon(Icons.Default.ArrowBack, null, modifier = Modifier.padding(end = 6.dp))
+                Text("Back to home")
+            }
+            Column {
                 Text("Settings", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Text("Privacy, security and data controls", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -87,7 +94,6 @@ fun SettingsScreen(onBack: () -> Unit) {
         }
         SettingsCard("Your data", "PaisaPulse keeps your ledger on this device", Icons.Default.Lock) {
             Text("Qualifying SMS content is sent to the categorization service only to extract transaction information. You can delete individual transactions or export your ledger anytime.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text("Before Play Store release, add your published privacy policy, support contact, and account/data-deletion links.", color = MaterialTheme.colorScheme.tertiary, fontWeight = FontWeight.Medium)
         }
     }
 }
