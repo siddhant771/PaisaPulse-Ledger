@@ -25,7 +25,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
 
-        // Secure API Key Loading Layer
+        // The Gemini key belongs only on the server. Never ship it in an APK.
         val localProperties = Properties().apply {
             val localFile = rootProject.file("local.properties")
             if (localFile.exists()) {
@@ -35,11 +35,6 @@ android {
             }
         }
 
-        val apiKey = project.findProperty("GEMINI_API_KEY") as? String
-            ?: System.getenv("GEMINI_API_KEY")
-            ?: localProperties.getProperty("GEMINI_API_KEY", "")
-
-        buildConfigField("String", "GEMINI_API_KEY", "\"$apiKey\"")
         val apiBaseUrl = project.findProperty("API_BASE_URL") as? String
             ?: localProperties.getProperty("API_BASE_URL", "http://10.0.2.2:8000/")
         val deviceApiToken = project.findProperty("DEVICE_API_TOKEN") as? String
@@ -87,7 +82,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
-    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 
     // Dagger Hilt Dependency Injection
     implementation("com.google.dagger:hilt-android:2.51.1")
@@ -95,8 +89,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.hilt:hilt-work:1.2.0")
-    kapt("androidx.hilt:hilt-compiler:1.2.0") // FIXED: Added missing AndroidX Hilt Compiler!
 
     // Room Local SQLite Cache
     implementation("androidx.room:room-runtime:2.8.4")
@@ -119,6 +111,7 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.biometric:biometric:1.1.0")
 
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")

@@ -12,10 +12,11 @@ class GenAIPipeline:
         if not api_key:
             raise RuntimeError("GEMINI_API_KEY is required")
         self.client = genai.Client(api_key=api_key)
+        self.model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     def process(self, raw_text: str) -> StructuredTransaction:
         response = self.client.models.generate_content(
-            model="gemini-2.5-flash",
+            model=self.model,
             contents=raw_text,
             config=types.GenerateContentConfig(
                 system_instruction=(

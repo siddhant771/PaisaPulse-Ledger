@@ -5,32 +5,36 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.biometric.BiometricPrompt
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.paisapulse.app.security.BiometricPreferences
 import com.paisapulse.app.ui.dashboard.DashboardScreen
 import com.paisapulse.app.ui.onboarding.ConsentScreen
-import com.paisapulse.app.ui.security.authenticateUser
 import com.paisapulse.app.ui.theme.PaisaPulseTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
     private var onboardingComplete by mutableStateOf(false)
-    private var authenticated by mutableStateOf(false)
-
+    private var biometricUnlocked by mutableStateOf(false)
     private val permissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { onboardingComplete = true }
@@ -39,6 +43,7 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         onboardingComplete = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
             .getBoolean(KEY_ONBOARDING_COMPLETE, false)
+        biometricUnlocked = !BiometricPreferences.isEnabled(this)
         setContent {
             PaisaPulseTheme {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -47,12 +52,8 @@ class MainActivity : FragmentActivity() {
                             onContinue = { requestTrackingPermissions() },
                             onManualOnly = { completeOnboarding() }
                         )
-                        authenticated -> DashboardScreen()
-                        else -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Button(onClick = { authenticateUser(this@MainActivity) { authenticated = true } }) {
-                                Text("Unlock PaisaPulse")
-                            }
-                        }
+                        !biometricUnlocked -> AppLockScreen(onUnlock = ::authenticate)
+                        else -> DashboardScreen()
                     }
                 }
             }
@@ -72,8 +73,53 @@ class MainActivity : FragmentActivity() {
         onboardingComplete = true
     }
 
+    private fun authenticate() {
+        val prompt = BiometricPrompt(
+            this,
+            ContextCompat.getMainExecutor(this),
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    biometricUnlocked = true
+                }
+            }
+        )
+        val info = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Unlock PaisaPulse")
+            .setSubtitle("Use your fingerprint, face unlock, or device screen lock")
+            .setAllowedAuthenticators(
+                androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG or
+                    androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+            )
+            .build()
+        prompt.authenticate(info)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Lock again when the app leaves the foreground; no financial data remains visible in Recents.
+        if (onboardingComplete && BiometricPreferences.isEnabled(this)) biometricUnlocked = false
+    }
+
     private companion object {
         const val PREFERENCES = "paisapulse_preferences"
         const val KEY_ONBOARDING_COMPLETE = "onboarding_complete"
+    }
+}
+
+@Composable
+private fun AppLockScreen(onUnlock: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("PaisaPulse", style = MaterialTheme.typography.displaySmall)
+        Text(
+            "Your financial data is protected.",
+            modifier = Modifier.padding(top = 10.dp, bottom = 24.dp),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Button(onClick = onUnlock) { Text("Unlock securely") }
     }
 }

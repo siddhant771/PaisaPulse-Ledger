@@ -20,6 +20,7 @@ class SmsReceiver : BroadcastReceiver() {
             .mapNotNull { it.displayMessageBody }
             .filter(SmsParser::isLikelyTransaction)
             .forEach { rawSms ->
+                SmsStatusStore.set(context, "Transaction is waiting for a secure connection")
                 val request = OneTimeWorkRequestBuilder<SmsProcessingWorker>()
                     .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
                     .setInputData(Data.Builder().putString(SmsProcessingWorker.KEY_RAW_SMS, rawSms).build())
