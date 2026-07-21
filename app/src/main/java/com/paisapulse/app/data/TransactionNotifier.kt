@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
-import com.paisapulse.app.R
+import com.siddhant.paisapulse.R
 
 object TransactionNotifier {
     private const val CHANNEL_ID = "transactions"

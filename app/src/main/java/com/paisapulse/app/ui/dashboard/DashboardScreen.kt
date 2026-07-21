@@ -96,7 +96,6 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
     }
 
     val expenses = transactions.filter { it.isExpense }.sumOf { it.amount }
-    val income = transactions.filterNot { it.isExpense }.sumOf { it.amount }
     val categoryTotals = transactions.filter { it.isExpense }.groupBy { it.category }
         .mapValues { (_, values) -> values.sumOf { it.amount } }
         .toList().sortedByDescending { it.second }
@@ -112,7 +111,7 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
         when (destination) {
             Destination.Home -> HomeContent(
                 modifier = Modifier.padding(padding), context = context, month = month,
-                income = income, expenses = expenses, transactions = transactions,
+                expenses = expenses, transactions = transactions,
                 categoryTotals = categoryTotals, budget = budget, smsStatus = smsStatus,
                 onMonthChange = viewModel::setMonth, onSettings = { destination = Destination.Settings },
                 onAnalytics = { destination = Destination.Analytics }, onLedger = { destination = Destination.Ledger },
@@ -148,7 +147,7 @@ private enum class Destination { Home, Analytics, Ledger, Settings }
 
 @Composable
 private fun HomeContent(
-    modifier: Modifier, context: Context, month: Int, income: Double, expenses: Double,
+    modifier: Modifier, context: Context, month: Int, expenses: Double,
     transactions: List<TransactionEntity>, categoryTotals: List<Pair<String, Double>>, budget: Double?, smsStatus: String?,
     onMonthChange: (Int) -> Unit, onSettings: () -> Unit, onAnalytics: () -> Unit, onLedger: () -> Unit,
     onExport: ((String) -> Unit) -> Unit, onSetBudget: () -> Unit, onSetCategoryBudget: () -> Unit, onEdit: (TransactionEntity) -> Unit
@@ -156,7 +155,7 @@ private fun HomeContent(
     LazyColumn(modifier.fillMaxSize().padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(18.dp)) {
         item { Header(context, month, onMonthChange, onExport, onSettings) }
         smsStatus?.let { item { ProcessingStatus(it) } }
-        item { BalanceCard(income, expenses) }
+        item { BalanceCard(expenses, budget) }
         item { BudgetSummary(expenses, budget, onSetBudget, onSetCategoryBudget) }
         item { SectionTitle("Quick overview", action = "Analytics", onAction = onAnalytics) }
         item { QuickOverview(categoryTotals, expenses, transactions.size, onAnalytics) }
@@ -183,14 +182,17 @@ private fun Header(context: Context, month: Int, onMonthChange: (Int) -> Unit, o
 }
 
 @Composable
-private fun BalanceCard(income: Double, expenses: Double) {
+private fun BalanceCard(expenses: Double, budget: Double?) {
+    val hasBudget = budget != null
+    val primaryAmount = if (hasBudget) budget!! - expenses else expenses
+    val primaryLabel = if (hasBudget) "Available to spend" else "Spent this month"
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary), shape = RoundedCornerShape(26.dp)) {
         Column(Modifier.padding(22.dp)) {
-            Text("Available this month", color = MaterialTheme.colorScheme.onSecondary.copy(alpha = .78f))
-            Text(money(income - expenses), style = MaterialTheme.typography.displaySmall, color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.ExtraBold)
+            Text(primaryLabel, color = MaterialTheme.colorScheme.onSecondary.copy(alpha = .78f))
+            Text(money(primaryAmount), style = MaterialTheme.typography.displaySmall, color = MaterialTheme.colorScheme.onSecondary, fontWeight = FontWeight.ExtraBold)
             Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                BalanceMetric("INCOME", money(income), Color(0xFFB3F5E8), Modifier.weight(1f))
                 BalanceMetric("SPENT", money(expenses), Color(0xFFFFC78F), Modifier.weight(1f))
+                if (hasBudget) BalanceMetric("MONTHLY BUDGET", money(budget!!), Color(0xFFB3F5E8), Modifier.weight(1f))
             }
         }
     }
@@ -271,7 +273,7 @@ private fun LedgerContent(modifier: Modifier, transactions: List<TransactionEnti
         Row(Modifier.padding(horizontal = 14.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
             CategoryAvatar(transaction)
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) { Text(transaction.description.ifBlank { "Transaction" }, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis); Text("${transaction.category} • ${if (transaction.source == "sms_ai") "AI categorized" else "Manual"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            Text("${if (transaction.isExpense) "−" else "+"}${money(transaction.amount)}", fontWeight = FontWeight.ExtraBold, color = if (transaction.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+            Text(money(transaction.amount), fontWeight = FontWeight.ExtraBold, color = if (transaction.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -281,7 +283,7 @@ private fun LedgerContent(modifier: Modifier, transactions: List<TransactionEnti
         Row(Modifier.clickable(onClick = onEdit).padding(horizontal = 14.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
             CategoryAvatar(transaction)
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) { Text(transaction.description.ifBlank { "Transaction" }, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis); Text("${transaction.category} • ${if (transaction.source == "sms_ai") "AI categorized" else "Manual"}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-            Column(horizontalAlignment = Alignment.End) { Text("${if (transaction.isExpense) "−" else "+"}${money(transaction.amount)}", fontWeight = FontWeight.ExtraBold, color = if (transaction.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary); IconButton(onClick = onDelete, modifier = Modifier.size(28.dp)) { Icon(Icons.Default.Delete, "Delete transaction", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) } }
+            Column(horizontalAlignment = Alignment.End) { Text(money(transaction.amount), fontWeight = FontWeight.ExtraBold, color = if (transaction.isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary); IconButton(onClick = onDelete, modifier = Modifier.size(28.dp)) { Icon(Icons.Default.Delete, "Delete transaction", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant) } }
         }
     }
 }

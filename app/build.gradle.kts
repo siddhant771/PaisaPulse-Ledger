@@ -12,14 +12,14 @@ plugins {
 }
 
 android {
-    namespace = "com.paisapulse.app"
+    namespace = "com.siddhant.paisapulse"
     compileSdk = 37 // Optimized to a stable production SDK target
 
     defaultConfig {
-        applicationId = "com.paisapulse.app"
+        applicationId = "com.siddhant.paisapulse"
         minSdk = 26
         targetSdk = 35 // Aligned with modern platform standards
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -1,6 +1,6 @@
 package com.paisapulse.app.di
 
-import com.paisapulse.app.BuildConfig
+import com.siddhant.paisapulse.BuildConfig
 import com.paisapulse.app.data.remote.CategoryApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

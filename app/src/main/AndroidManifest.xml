@@ -14,7 +14,7 @@
 
     <!-- Application Class name mapped perfectly to your Hilt configuration -->
     <application
-        android:name=".PaisaPulseApplication"
+        android:name="com.paisapulse.app.PaisaPulseApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,7 +24,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.paisapulse.app.MainActivity"
             android:exported="true"
             >
             <intent-filter>
@@ -35,7 +35,7 @@
 
         <!-- High Priority Background Interceptor Pipeline -->
         <receiver
-            android:name=".data.SmsReceiver"
+            android:name="com.paisapulse.app.data.SmsReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter android:priority="999">
