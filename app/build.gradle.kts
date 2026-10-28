@@ -18,8 +18,8 @@ android {
     defaultConfig {
         applicationId = "com.paisapulse.app"
         minSdk = 26
-        targetSdk = 35 // Aligned with modern platform standards
-        versionCode = 1
+        targetSdk = 36
+        versionCode = 2
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
