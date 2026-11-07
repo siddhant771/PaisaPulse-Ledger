@@ -31,7 +31,10 @@ public class TransactionController {
             String deviceId,
 
             @Size(max = 32)
-            String source
+            String source,
+            @NotBlank
+            @JsonProperty("received_date")
+            String receivedDate
     ) {}
 
     @PostMapping("/process")
@@ -39,7 +42,7 @@ public class TransactionController {
             @Valid @RequestBody ProcessRequest request
     ) {
         TransactionResponse response =
-                geminiService.categorize(request.rawSms());
+                geminiService.categorize(request.rawSms(),request.receivedDate);
 
         return ResponseEntity.ok(response);
     }
