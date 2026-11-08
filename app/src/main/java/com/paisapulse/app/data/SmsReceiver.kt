@@ -7,6 +7,7 @@ import android.content.Intent
 import android.provider.Telephony
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -51,30 +52,53 @@ private fun enqueueTransaction(
         )
 }
 
+
 class SmsReceiver : BroadcastReceiver() {
 
-    override fun onReceive(
-        context: Context,
-        intent: Intent
-    ) {
+    override fun onReceive(context: Context, intent: Intent) {
+
+        Log.d("PaisaPulse", "SMS RECEIVER TRIGGERED")
 
         if (intent.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
+            Log.d("PaisaPulse", "Ignored action: ${intent.action}")
             return
         }
 
         val messages =
             Telephony.Sms.Intents.getMessagesFromIntent(intent)
 
-        messages
-            .mapNotNull { it.displayMessageBody }
-            .filter { SmsParser.isLikelyTransaction(it) }
-            .forEach {
-                enqueueTransaction(
-                    context,
-                    it,
-                    "sms"
-                )
-            }
+        Log.d("PaisaPulse", "SMS parts received: ${messages.size}")
+
+        // Combine multipart SMS parts into one message.
+        val fullMessage = messages.joinToString(separator = "") {
+            it.displayMessageBody.orEmpty()
+        }
+
+        if (fullMessage.isBlank()) {
+            Log.d("PaisaPulse", "SMS message is empty")
+            return
+        }
+
+        val isTransaction =
+            SmsParser.isLikelyTransaction(fullMessage)
+
+        Log.d(
+            "PaisaPulse",
+            "Transaction filter result: $isTransaction"
+        )
+
+        if (!isTransaction) {
+            Log.d("PaisaPulse", "SMS rejected by SmsParser")
+            return
+        }
+
+        Log.d("PaisaPulse", "Enqueuing transaction")
+
+        enqueueTransaction(
+            context,
+            fullMessage,
+            "sms"
+        )
     }
 }
 

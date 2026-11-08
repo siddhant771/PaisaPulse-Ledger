@@ -53,12 +53,14 @@ class TransactionRepository @Inject constructor(
     ): Boolean {
 
         require(rawText.isNotBlank())
+        val receivedDate = LocalDate.now().toString()
 
         val response = api.processTransaction(
             TransactionRequest(
                 raw_sms = rawText,
                 device_id = deviceId(),
-                source = source
+                source = source,
+                received_date = receivedDate
             )
         )
 

@@ -62,6 +62,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+
     private fun requestTrackingPermissions() {
         val permissions = buildList {
             if (ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) add(Manifest.permission.RECEIVE_SMS)
@@ -73,6 +74,7 @@ class MainActivity : FragmentActivity() {
     private fun completeOnboarding() {
         getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE).edit().putBoolean(KEY_ONBOARDING_COMPLETE, true).apply()
         onboardingComplete = true
+
     }
 
     private fun authenticate() {

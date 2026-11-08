@@ -36,7 +36,7 @@ android {
         }
 
         val apiBaseUrl = project.findProperty("API_BASE_URL") as? String
-            ?: localProperties.getProperty("API_BASE_URL", "http://10.0.2.2:8000/")
+            ?: localProperties.getProperty("API_BASE_URL", "http://10.0.2.2:8080/")
         val deviceApiToken = project.findProperty("DEVICE_API_TOKEN") as? String
             ?: localProperties.getProperty("DEVICE_API_TOKEN", "")
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")

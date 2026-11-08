@@ -6,7 +6,8 @@ import retrofit2.http.POST
 data class TransactionRequest(
     val raw_sms: String,
     val device_id: String,
-    val source: String = "sms"
+    val source: String = "sms",
+    val received_date: String
 )
 
 data class TransactionResponse(
