@@ -3,9 +3,13 @@ package com.paisapulse.app.data.remote
 import retrofit2.http.Body
 import retrofit2.http.POST
 
-data class SmsProcessRequest(val raw_sms: String, val device_id: String)
+data class TransactionRequest(
+    val raw_sms: String,
+    val device_id: String,
+    val source: String = "sms"
+)
 
-data class StructuredTransactionResponse(
+data class TransactionResponse(
     val amount: Double,
     val merchant: String,
     val category: String,
@@ -15,6 +19,9 @@ data class StructuredTransactionResponse(
 )
 
 interface CategoryApi {
+
     @POST("api/v1/process")
-    suspend fun processSms(@Body request: SmsProcessRequest): StructuredTransactionResponse
+    suspend fun processTransaction(
+        @Body request: TransactionRequest
+    ): TransactionResponse
 }
